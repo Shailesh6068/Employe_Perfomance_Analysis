@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Productivity Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Employee Productivity Predictor</h1>
+
+    <form action="/predict" method="post">
+        <div class="form-group">
+            <label>Age</label>
+            <input type="number" name="Age" placeholder="Enter age" required value="{{ form_data.Age if form_data else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label>Gender</label>
+            <select name="Gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male" {{ 'selected' if form_data and form_data.Gender == 'Male' else '' }}>Male</option>
+                <option value="Female" {{ 'selected' if form_data and form_data.Gender == 'Female' else '' }}>Female</option>
+                <option value="Other" {{ 'selected' if form_data and form_data.Gender == 'Other' else '' }}>Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Department</label>
+            <select name="Department" required>
+                <option value="">Select Department</option>
+                <option value="IT" {{ 'selected' if form_data and form_data.Department == 'IT' else '' }}>IT</option>
+                <option value="HR" {{ 'selected' if form_data and form_data.Department == 'HR' else '' }}>HR</option>
+                <option value="Finance" {{ 'selected' if form_data and form_data.Department == 'Finance' else '' }}>Finance</option>
+                <option value="Marketing" {{ 'selected' if form_data and form_data.Department == 'Marketing' else '' }}>Marketing</option>
+                <option value="Operations" {{ 'selected' if form_data and form_data.Department == 'Operations' else '' }}>Operations</option>
+                <option value="Sales" {{ 'selected' if form_data and form_data.Department == 'Sales' else '' }}>Sales</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Designation</label>
+            <select name="Designation" required>
+                <option value="">Select Designation</option>
+                <option value="Lead" {{ 'selected' if form_data and form_data.Designation == 'Lead' else '' }}>Lead</option>
+                <option value="Executive" {{ 'selected' if form_data and form_data.Designation == 'Executive' else '' }}>Executive</option>
+                <option value="Junior" {{ 'selected' if form_data and form_data.Designation == 'Junior' else '' }}>Junior</option>
+                <option value="Senior" {{ 'selected' if form_data and form_data.Designation == 'Senior' else '' }}>Senior</option>
+                <option value="Manager" {{ 'selected' if form_data and form_data.Designation == 'Manager' else '' }}>Manager</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Experience (Years)</label>
+            <input type="number" name="ExperienceYears" placeholder="Enter experience" required value="{{ form_data.ExperienceYears if form_data else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label>Skillset (Select Multiple)</label>
+            <select name="Skillset" id="skills" multiple required>
+                {% for skill in ['Accounting','Analytics','C++','Cloud Computing','Communication','Conflict Management','Content Creation','CRM','Data Analysis','Excel','Finance','Java','Logistics','Marketing','Negotiation','Project Management','Python','Recruitment','SEO','SQL'] %}
+                    <option value="{{ skill }}" {{ 'selected' if form_data and skill in form_data.Skillset else '' }}>{{ skill }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Productivity Score</label>
+            <input type="number" name="ProductivityScore" placeholder="0 - 100" min="0" max="100" required value="{{ form_data.ProductivityScore if form_data else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label>Work Location</label>
+            <select name="WorkLocation" required>
+                <option value="">Select Location</option>
+                <option value="Noida" {{ 'selected' if form_data and form_data.WorkLocation == 'Noida' else '' }}>Noida</option>
+                <option value="Mumbai" {{ 'selected' if form_data and form_data.WorkLocation == 'Mumbai' else '' }}>Mumbai</option>
+                <option value="Pune" {{ 'selected' if form_data and form_data.WorkLocation == 'Pune' else '' }}>Pune</option>
+                <option value="Bangalore" {{ 'selected' if form_data and form_data.WorkLocation == 'Bangalore' else '' }}>Bangalore</option>
+                <option value="Kolkata" {{ 'selected' if form_data and form_data.WorkLocation == 'Kolkata' else '' }}>Kolkata</option>
+                <option value="Delhi" {{ 'selected' if form_data and form_data.WorkLocation == 'Delhi' else '' }}>Delhi</option>
+                <option value="Hyderabad" {{ 'selected' if form_data and form_data.WorkLocation == 'Hyderabad' else '' }}>Hyderabad</option>
+                <option value="Chennai" {{ 'selected' if form_data and form_data.WorkLocation == 'Chennai' else '' }}>Chennai</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Education Level</label>
+            <select name="EducationLevel" required>
+                <option value="">Select Education</option>
+                <option value="Master" {{ 'selected' if form_data and form_data.EducationLevel == 'Master' else '' }}>Master</option>
+                <option value="Bachelor" {{ 'selected' if form_data and form_data.EducationLevel == 'Bachelor' else '' }}>Bachelor</option>
+                <option value="High School" {{ 'selected' if form_data and form_data.EducationLevel == 'High School' else '' }}>High School</option>
+                <option value="PhD" {{ 'selected' if form_data and form_data.EducationLevel == 'PhD' else '' }}>PhD</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Last Promotion Year</label>
+            <input type="number" name="LastPromotionYear" placeholder="Enter year" required value="{{ form_data.LastPromotionYear if form_data else '' }}">
+        </div>
+
+        <button type="submit" class="btn">Predict</button>
+    </form>
+
+    {% if prediction_text %}
+        <div class="result">{{ prediction_text }}</div>
+    {% endif %}
+</div>
+
+<script>
+    const choices = new Choices('#skills', {
+        removeItemButton: true,
+        searchEnabled: true,
+        placeholderValue: 'Select skills',
+    });
+
+    // Preserve selected skills after form submission
+    {% if form_data and form_data.Skillset %}
+        const selectedSkills = {{ form_data.Skillset|tojson }};
+        choices.setChoiceByValue(selectedSkills);
+    {% endif %}
+</script>
+
+</body>
+</html>
