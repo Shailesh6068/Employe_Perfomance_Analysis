@@ -1,39 +1,50 @@
-from flask import Flask, render_template, request
+import streamlit as st
 import pandas as pd
 import joblib
-
-app = Flask(__name__)
+import numpy as np
 
 # Load trained pipeline
 model = joblib.load("pipeline.pkl")
 
-@app.route("/")
-def home():
-    return render_template("index.html")
+st.title("Employee Productivity Prediction")
 
-@app.route("/predict", methods=["POST"])
-def predict():
+st.header("Enter Employee Details:")
+
+# Input fields
+Age = st.number_input("Age", min_value=18, max_value=70, value=25)
+Gender = st.selectbox("Gender", ["Male", "Female", "Other"])
+Department = st.selectbox("Department", ["HR", "IT", "Finance", "Marketing", "Operations"])
+Designation = st.selectbox("Designation", ["Junior", "Senior", "Manager", "Director"])
+ExperienceYears = st.number_input("Experience (Years)", min_value=0, max_value=50, value=2)
+Skillset = st.multiselect(
+    "Skillset",
+    ["Python", "R", "SQL", "Machine Learning", "Data Analysis", "Communication", "Leadership"]
+)
+ProductivityScore = st.number_input("Productivity Score", min_value=0, max_value=100, value=50)
+WorkLocation = st.selectbox("Work Location", ["Remote", "Onsite", "Hybrid"])
+EducationLevel = st.selectbox("Education Level", ["High School", "Bachelor", "Master", "PhD"])
+LastPromotionYear = st.number_input("Last Promotion Year", min_value=2000, max_value=2026, value=2022)
+
+# Predict button
+if st.button("Predict"):
+    # Prepare input data
     data = {
-        "Age": int(request.form["Age"]),
-        "Gender": request.form["Gender"],
-        "Department": request.form["Department"],
-        "Designation": request.form["Designation"],
-        "ExperienceYears": int(request.form["ExperienceYears"]),
-        "Skillset": request.form.getlist("Skillset"),
-        "ProductivityScore": int(request.form["ProductivityScore"]),
-        "WorkLocation": request.form["WorkLocation"],
-        "EducationLevel": request.form["EducationLevel"],
-        "LastPromotionYear": int(request.form["LastPromotionYear"])
+        "Age": Age,
+        "Gender": Gender,
+        "Department": Department,
+        "Designation": Designation,
+        "ExperienceYears": ExperienceYears,
+        "Skillset": [Skillset],  # wrap in list for pipeline
+        "ProductivityScore": ProductivityScore,
+        "WorkLocation": WorkLocation,
+        "EducationLevel": EducationLevel,
+        "LastPromotionYear": LastPromotionYear
     }
 
     df = pd.DataFrame([data])
+
+    # Prediction
     prediction = model.predict(df)[0]
 
-    return render_template(
-        "index.html",
-        prediction_text=f"Prediction Result: {prediction}",
-        form_data=data
-    )
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    # Show result
+    st.success(f"Prediction Result: {prediction}")
